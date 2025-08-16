@@ -1,6 +1,6 @@
 1. Cloner le dépôt
 bash
-git clone https://github.com/tisiazola-prog/Gestion-vehicles..git
+git clone https://github.com/tisiazola-prog/Gestion-vehicules..git
 cd nom-du-projet
 
 
