@@ -1,0 +1,147 @@
+  $('form').submit(function(e) {
+        e.preventDefault();
+
+        // Créer FormData à partir du formulaire spécifique
+
+        let formData = {};
+
+        if ($('#cylindre').val() != "") {
+
+            formData = {
+                type: $('#type').val().trim(),
+                marque: $('#marque').val().trim(),
+                modele: $('#modele').val().trim(),
+                immatriculation: $('#immatriculation').val().trim(),
+                annee: $('#annee').val().trim(),
+                capacite: $('#capacite').val().trim(),
+                nb_place: $('#nb_place').val().trim(),
+                kilometrage: $('#kilometrage').val().trim(),
+                cylindre: $('#cylindre').val().trim(),
+                image: $('#file').val().trim()
+
+            };
+
+
+        } else {
+
+            formData = {
+                type: $('#type').val().trim(),
+                marque: $('#marque').val().trim(),
+                modele: $('#modele').val().trim(),
+                immatriculation: $('#immatriculation').val().trim(),
+                annee: $('#annee').val().trim(),
+                capacite: $('#capacite').val().trim(),
+                nb_place: $('#nb_place').val().trim(),
+                kilometrage: $('#kilometrage').val().trim(),
+                image: $('#file').val().trim()
+
+            };
+
+        }
+
+
+
+
+
+        console.log(formData);
+
+        $.ajax({
+            url: '/ajouterVehicule',
+            type: 'POST',
+            processData: false,
+            contentType: "application/json",
+            data: JSON.stringify(formData),
+
+            success: function(response) {
+                if (response.success) {
+                    alert(response.message);
+
+                } else {
+                    // Affiche le message d'erreur complet
+                    let errorMsg = response.message || 'Erreur inconnue';
+                    if (response.missing_fields) {
+                        errorMsg += '\nChamps manquants: ' + response.missing_fields.join(', ');
+                    }
+                    alert('Erreur: ' + errorMsg);
+                }
+            },
+            error: function(xhr, status, error) {
+                // Affiche les détails complets de l'erreur
+                console.error("Status:", status);
+                console.error("Error:", error);
+                console.error("Response:", xhr.responseText);
+
+                let errorMsg = "Erreur serveur";
+                try {
+                    const serverResponse = JSON.parse(xhr.responseText);
+                    errorMsg = serverResponse.message || serverResponse.error || errorMsg;
+                } catch (e) {}
+
+                alert('Erreur: ' + errorMsg + '\nCode: ' + xhr.status);
+            }
+        });
+    });
+
+
+
+@app.route('/ajouterVehicule', methods=['POST'])
+def ajouterVehicule():
+    
+    try:
+        
+        data = request.get_json() 
+        
+        # Récupérer les données du formulaire
+        type_vehicule = data.get('type')
+        marque = data.get('marque')
+        modele = data.get('modele')
+        immatriculation = data.get('immatriculation')
+        annee = data.get('annee')
+        capacite = data.get('capacite')
+        kilometrage = data.get('kilometrage')
+        image = data.get('image')
+        
+        # Liste des champs obligatoires
+        required_fields = {
+            'type': type_vehicule,
+            'marque': marque,
+            'modele': modele,
+            'immatriculation': immatriculation,
+            'annee': annee,
+            'capacite': capacite,
+            'kilometrage': kilometrage,
+            'image': image
+        }
+        
+        # Vérifier les champs vides
+        missing_fields = [field for field, value in required_fields.items() if not value]
+        
+        if missing_fields:
+            return jsonify({
+                'success': False,
+                'message': 'Champs obligatoires manquants',
+                'missing_fields': missing_fields
+            })
+        
+        # Gérer le fichier image (optionnel)
+        image_path = None
+        if 'image' in request.files:
+            
+            file = request.files['image']
+            
+            if file and file.filename != '' and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                image_path = url_for('static', filename=f'upload/{filename}')
+        
+    
+        
+        return jsonify({'success': True, 'message': 'Véhicule ajouté avec succès'})
+    
+    except sqlite3.IntegrityError:
+        return jsonify({'success': False, 'message': 'Immatriculation déjà existante'})
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)})
+    
+    

@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Location</title>
+    <style>
+         :root {
+            --primary-color: #3498db;
+            --secondary-color: #2980b9;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --gray-color: #95a5a6;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            min-height: 100vh;
+        }
+        
+        header {
+            background-color: var(--dark-color);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+        
+        header h1 {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.8rem;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 1rem;
+        }
+        
+        nav a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: background-color 0.3s;
+        }
+        
+        nav a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        nav a.active {
+            background-color: var(--primary-color);
+        }
+        
+        main {
+            padding: 2rem;
+        }
+        
+        footer {
+            background-color: var(--dark-color);
+            color: white;
+            text-align: center;
+            padding: 1rem;
+        }
+        /* Tableau de bord */
+        
+        .dashboard h2 {
+            margin-bottom: 1.5rem;
+            color: var(--dark-color);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .stat-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        
+        .stat-card h3 {
+            color: var(--gray-color);
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-card .count {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 0.25rem;
+        }
+        
+        .stat-card .label {
+            color: var(--gray-color);
+            font-size: 0.9rem;
+        }
+        
+        .recent-activity {
+            background-color: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .recent-activity h3 {
+            margin-bottom: 1rem;
+            color: var(--dark-color);
+        }
+        
+        .recent-activity ul {
+            list-style: none;
+        }
+        
+        .recent-activity li {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .recent-activity li:last-child {
+            border-bottom: none;
+        }
+        /* Styles communs pour les pages */
+        
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .page-header h2 {
+            color: var(--dark-color);
+        }
+        /* Tableaux */
+    </style>
+</head>
+
+<body>
+    <div class="locations-page  allpages" id="locations">
+        <div class="page-header">
+            <h2><i class="fas fa-key"></i> Gestion des Locations</h2>
+            <button class="btn btn-primary actionBtn" id="add-location-btn" data-page="location-modal">
+            <i class="fas fa-plus"></i> Ajouter une location
+        </button>
+        </div>
+
+        <div class="filters">
+
+            <form action="" id="filtreForm">
+
+                <div class="form-group">
+                    <label for="carburant-vehicule-filter">Véhicule</label>
+                    <select id="carburant-vehicule-filter" class="control">
+                    <option value="">Tous les véhicules</option>
+                    <!-- Rempli dynamiquement -->
+                </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="location-client-filter">Client</label>
+                    <input type="text" id="location-client-filter" class="control" placeholder="Filtrer par client">
+                </div>
+
+            </form>
+
+        </div>
+
+        <div class="table-container">
+            <table id="locations-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Véhicule</th>
+                        <th>Client</th>
+                        <th>Date début</th>
+                        <th>Date fin</th>
+                        <th>Prix total</th>
+                        <th>Statut</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Rempli dynamiquement -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal Ajout/Modification Location -->
+    <div id="location-modal" class="modal">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h3 id="location-modal-title">Ajouter une location</h3>
+                <button class="close-btn">&times;</button>
+            </div>
+
+            <form id="location-form" class="modal-body">
+
+                <div class="form-row">
+
+                    <div class="form-group">
+                        <label for="location-vehicule">Véhicule</label>
+                        <select id="location-vehicule" class="control" required>
+                        <option value="">Sélectionnez un véhicule</option>
+                        <!-- Rempli dynamiquement -->
+                    </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="location-vehicule">Marque</label>
+                        <select id="location-vehicule" class="control" required>
+                        <option value="">Sélectionnez une marque</option>
+                        <!-- Rempli dynamiquement -->
+                    </select>
+                    </div>
+
+                </div>
+
+                <div class="form-group">
+                    <label for="location-client">Client</label>
+                    <input type="text" id="location-client" class="control" required>
+                </div>
+
+                <div class="form-row">
+
+                    <div class="form-group">
+                        <label for="location-date_debut">Date début</label>
+                        <input type="datetime-local" id="location-date_debut" class="control" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="location-date_fin">Date fin</label>
+                        <input type="datetime-local" id="location-date_fin" class="control" required>
+                    </div>
+
+                </div>
+
+                <div class="form-row">
+
+                    <div class="form-group">
+                        <label for="location-prix_jour">Prix par jour ($)</label>
+                        <input type="number" id="location-prix_jour" class="control" min="0" step="0.01" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="location-caution">Caution ($)</label>
+                        <input type="number" id="location-caution" class="control" min="0" step="0.01" required>
+                    </div>
+
+                </div>
+
+            </form>
+
+
+            <div class="modal-footer">
+                <button class="btn btn-danger close-modal">Annuler</button>
+                <button class="btn btn-primary" id="save-location">Enregistrer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Retour Location -->
+    <div id="return-location-modal" class="modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3>Retour de location</h3>
+                <button class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="return-location-form">
+                    <input type="hidden" id="return-location-id">
+                    <div class="form-group">
+                        <label for="return-date">Date de retour</label>
+                        <input type="datetime-local" id="return-date" class="form-control" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="return-km">Kilométrage retour</label>
+                        <input type="number" id="return-km" class="form-control" min="0" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="return-etat">État du véhicule</label>
+                        <select id="return-etat" class="form-control" required>
+                        <option value="excellent">Excellent</option>
+                        <option value="bon">Bon</option>
+                        <option value="moyen">Moyen</option>
+                        <option value="mauvais">Mauvais</option>
+                    </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="return-notes">Observations</label>
+                        <textarea id="return-notes" class="form-control" rows="3"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="return-caution-rendue">Caution rendue (€)</label>
+                        <input type="number" id="return-caution-rendue" class="form-control" min="0" step="0.01" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger close-modal">Annuler</button>
+                <button class="btn btn-primary" id="confirm-return">Enregistrer retour</button>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,809 @@
+def add_vehicule( type , marque , modele , immatriculation , annee , capacite , kilometrage , image_path , nb_place , cylindre ):
+    
+    try:
+        
+        conn = sqlite3.connect(get_db_path())  #Connexion à la base de données
+        conn.row_factory = sqlite3.Row  #Permet de récupérer les lignes sous forme de dictionnaire
+        
+        query = '''
+            INSERT INTO Vehicule (type, marque, model, immatriculation, annee, capacite, kilometrage, image)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ? )
+        '''
+        param =  (type , marque, modele, immatriculation, annee, capacite, kilometrage, image_path , cylindre)
+        
+        cursor = conn.cursor()
+        cursor.execute(query , param)  #Exécution de la requête
+        
+        vehicule_id = cursor.lastrowid
+        
+        if type == "Voiture":
+            query = '''
+                INSERT INTO Voiture (vehicule_id , nb_places)
+                VALUES (?, ?)
+            '''
+            param =  (vehicule_id , nb_place )
+            cursor = conn.cursor()
+            cursor.execute(query , param)  
+            
+        elif type == "Camion":
+            query = '''
+                INSERT INTO Camion (vehicule_id , nb_places)
+                VALUES (?, ?)
+            '''
+            param =  (vehicule_id , nb_place )
+            cursor = conn.cursor()
+            cursor.execute(query , param)  
+            
+        elif type == "Moto":
+            query = '''
+                INSERT INTO Moto (vehicule_id , cylindree)
+                VALUES (?, ?)
+            '''
+            param =  (vehicule_id , cylindre )
+            cursor = conn.cursor()
+            cursor.execute(query , param)  
+            
+            
+        conn.close()  
+        
+        return True  
+    
+    except sqlite3.Error as e:
+        print(f"[ERREUR DB] {str(e)}")  #Affiche l'erreur de la base de données
+        return None  #Retourne None en cas d'erreur
+
+    
+    
+      
+        cursor.execute('''
+       
+        ''', (type_vehicule, marque, modele, immatriculation, annee, capacite, kilometrage, prix, image_path))
+        
+        conn.commit()
+        conn.close()
+
+
+
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <link rel="stylesheet" href="{{url_for('static' , filename='styles/index.css')}}">
+    <link rel="stylesheet" href="{{url_for('static' , filename='styles/main.css')}}">
+    <style>
+        /* Reset et base */
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+        /* Header */
+        
+        .header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            order: 1;
+        }
+        
+        .search-area {
+            display: flex;
+            align-items: center;
+            order: 2;
+            flex-grow: 1;
+            justify-content: center;
+            margin: 10px 0;
+            gap: 20px;
+        }
+        
+        select#type-filter {
+            padding: 10px;
+            width: 250px;
+            border-radius: 5px;
+            border: none;
+            outline: none;
+            background-color: #ecf0f1;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+        
+        select option {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+        
+        .search-box {
+            display: flex;
+        }
+        
+        .search-box input {
+            padding: 10px;
+            border: none;
+            width: 400px;
+            outline: none;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        
+        .login-btn {
+            width: 130px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            order: 3;
+            padding: 10px 10px;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+        
+        .login-btn:hover {
+            background-color: #297fb973;
+        }
+        /* Section véhicules */
+        
+        .main {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            height: 545px;
+        }
+        
+        .vehicles-container {
+            width: 100%;
+            height: 100%;
+            flex-wrap: wrap;
+            overflow-y: auto;
+            display: flex;
+            scrollbar-width: thin;
+            scrollbar-color: #3498db #f5f5f5;
+        }
+        
+        .vehicles-container::-webkit-scrollbar {
+            height: 20px;
+            width: 10px;
+        }
+        
+        .vehicles-container::-webkit-scrollbar-track {
+            background: #f5f5f5;
+        }
+        
+        .vehicles-container::-webkit-scrollbar-thumb {
+            background-color: #3498db;
+            border-radius: 10px;
+        }
+        
+        .vehicle-card {
+            display: flex;
+            flex-direction: column;
+            width: 250px;
+            height: 340px;
+            align-items: center;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+            margin: 20px 10px;
+        }
+        
+        .vehicle-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .vehicle-img {
+            width: 100%;
+            height: 180px;
+        }
+        
+        .vehicle-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .vehicle-info h3 {
+            font-size: 18px;
+            margin-bottom: 5px;
+            color: #2c3e50;
+        }
+        
+        .vehicle-info .model {
+            color: #7f8c8d;
+            margin-bottom: 5px;
+        }
+        
+        .prix {
+            font-weight: bold;
+            color: #e74c3c;
+            font-size: 20px;
+        }
+        
+        .see-more-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            align-self: self-end;
+            width: 80px;
+            padding: 8px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin: 8px;
+        }
+        
+        .see-more-btn:hover {
+            background-color: #2980b9;
+        }
+        /* Modal */
+        
+        .modal {
+            display: flex;
+            position: absolute;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        
+        #loginModal .modal-content {
+            width: 400px;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            background-color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border-radius: 10px;
+        }
+        
+        #loginModal .tete {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 5px 10px;
+            width: 100%;
+            border-bottom: 2px solid rgba(0, 0, 0, 0.205);
+        }
+        
+        .close-btn {
+            font-size: 22px;
+            font-weight: bold;
+            color: #aaa;
+            cursor: pointer;
+        }
+        
+        .close-btn:hover {
+            color: #333;
+        }
+        /* Formulaire de connexion */
+        
+        #loginForm {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            padding: 20px;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-group label {
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .form-group input {
+            width: 350px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            outline: none;
+            border: 1px solid rgba(0, 0, 0, 0.404);
+        }
+        
+        .submit-btn {
+            padding: 12px;
+            background-color: #2ecc71;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        
+        .submit-btn:hover {
+            background-color: #27ae60;
+        }
+        
+        .modal-content {
+            position: relative;
+            background: white;
+            margin: 5% auto;
+            padding: 20px;
+            width: 80%;
+            max-width: 700px;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.151);
+            border-radius: 10px;
+        }
+        
+        .modal-content .entete {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            gap: 30px;
+        }
+        
+        .modal-content .entete img {
+            width: 350px;
+            height: 250px;
+            border: 1px solid black;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.151);
+        }
+        
+        .modal-content .entete .infos {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 10px;
+        }
+        
+        .infos label {
+            font-weight: bold;
+            font-size: 1rem;
+            color: #333;
+            gap: 2px;
+        }
+        
+        .infos label span {
+            color: orange;
+            font-weight: normal;
+            margin-left: 10px;
+        }
+        
+        .pied {
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+            width: 100%;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .pied label {
+            font-weight: bold;
+            font-size: 1rem;
+            color: #333;
+            gap: 2px;
+        }
+        
+        .pied label span {
+            color: orange;
+            font-weight: normal;
+            margin-left: 10px;
+        }
+        
+        .pied .prix {
+            background-color: #e74c3c;
+            padding: 10px 20px;
+            border-radius: 10px;
+        }
+        
+        .pied .prix label {
+            font-weight: bold;
+            color: white;
+        }
+        
+        .pied .prix span {
+            font-weight: bold;
+            color: white;
+        }
+        
+        .action {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 220px;
+            align-self: self-end;
+            border: none;
+        }
+        
+        .action button {
+            width: 100px;
+            padding: 8px;
+            border-radius: 10px;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .action .com {
+            background-color: orange;
+        }
+        
+        .action .com:hover {
+            background-color: rgba(255, 166, 0, 0.712);
+        }
+        
+        .action .res {
+            background-color: rgba(0, 0, 0, 0.637);
+        }
+        
+        .close-btn {
+            position: absolute;
+            right: 5px;
+            top: 15px;
+            transform: translate(-50%, -50%);
+            font-size: 1.5rem;
+        }
+        
+        .Message {
+            background: white;
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            transform: translate(-50%, -50%);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.459);
+            padding: 20px 10px;
+            border: 1px solid #27ae60;
+        }
+        
+        .Message h3 {
+            color: #27ae60;
+            font-size: 1rem;
+            margin-top: 10px;
+        }
+        
+        .Message p {
+            color: gray;
+            font-size: 0.8rem;
+        }
+    </style>
+
+    <style>
+        .allCss {
+            width: 60%;
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+            margin: auto;
+            padding: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.404);
+            border-radius: 10px;
+            background-color: white;
+        }
+        
+        .allCss .headerX {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 2px solid black;
+            width: 100%;
+            padding-bottom: 10px;
+        }
+        
+        .allCss .headerX h1 {
+            font-size: 1.5rem;
+            color: black;
+        }
+        
+        .allCss .headerX span {
+            font-size: 1.5rem;
+            color: rgba(0, 0, 0, 0.322);
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .allCss .headerX span:hover {
+            color: rgba(0, 0, 0, 0.945);
+        }
+        
+        .allCss form {
+            display: flex;
+            align-items: start;
+            justify-content: center;
+            width: 100%;
+            gap: 50px;
+            overflow-y: auto;
+            height: 550px;
+            padding: 10px;
+        }
+        
+        form section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .champs {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .champs input {
+            width: 350px;
+            padding: 15px 30px;
+            border-radius: 10px;
+            border: 1px solid rgba(0, 0, 0, 0.39);
+            outline: none;
+            font-size: 1rem;
+        }
+        
+        .champs select {
+            width: 350px;
+            padding: 15px 30px;
+            border-radius: 10px;
+            border: 1px solid rgba(0, 0, 0, 0.39);
+            outline: none;
+            font-size: 1rem;
+        }
+        
+        .champs label {
+            font-size: 1rem;
+            color: rgba(0, 0, 0, 0.644);
+            align-self: self-start;
+        }
+        
+        .image {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .boxImg {
+            width: 250px;
+            height: 250px;
+            border-radius: 10px;
+            border: 2px solid rgba(0, 0, 0, 0.658);
+        }
+        
+        .image img {
+            width: 100%;
+            height: 100%;
+            border-radius: 10px;
+        }
+        
+        .image button {
+            width: 150px;
+            padding: 10px;
+            background-color: orange;
+            color: white;
+            border-radius: 10px;
+            margin-top: 10px;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .button {
+            display: flex;
+            align-items: center;
+            margin-top: 25px;
+            width: 350px;
+            justify-content: space-evenly;
+        }
+        
+        .button button {
+            width: 150px;
+            padding: 10px;
+            color: white;
+            border-radius: 10px;
+            border: none;
+        }
+        
+        #Valider {
+            background-color: #3498db;
+        }
+        
+        #Valider:hover {
+            background-color: #2980b9;
+        }
+        
+        #Annuler {
+            background-color: #e74c3c;
+        }
+        
+        #Valider:hover {
+            background-color: #e74d3c9d;
+        }
+    </style>
+
+</head>
+
+<body>
+    <!-- Header -->
+
+    <header class="header">
+
+        <div class="container">
+
+            <form class="header-content" id="filtreForm">
+
+                <button class="login-btn" id="loginBtn">Ajouter un vehicule</button>
+
+                <div class="search-area">
+                    <select id="type-filter">
+                         <option value="">Tous les vehicules</option>
+                        <option value="Voiture">Voitures</option>
+                        <option value="Camion">Camions</option>
+                        <option value="Moto">Motos</option>
+                    </select>
+
+                    <div class="search-box">
+                        <input type="text" id="marque-filter" placeholder="Rechercher un véhicule...">
+                    </div>
+
+                </div>
+                <h1 class="logo">Tisia agence</h1>
+            </form>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <section class="vehicles-container" id="vehiclesContainer">
+
+        </section>
+    </main>
+
+
+    <!-- Login Modal -->
+    <div class="modal" id="loginModal">
+
+        <div class="vehiculeModal  allCss">
+
+            <div class="headerX">
+                <h1>Ajouter un vehicule</h1>
+                <span class="modal-close">&times;</span>
+            </div>
+
+            <!-- Modifiez votre formulaire comme suit -->
+            <form action="" method="post" enctype="multipart/form-data" id="addVehiculeForms">
+                <section>
+                    <div class="champs">
+                        <label for="type">Type</label>
+                        <select name="type" id="type">
+                            <option value="Voiture">Voiture</option>
+                            <option value="Camion">Camion</option>
+                            <option value="Moto">Moto</option>
+                         </select>
+                    </div>
+
+                    <div class="champs">
+                        <label for="marque">Marque</label>
+                        <input type="text" name="marque" id="marque">
+                    </div>
+
+                    <div class="champs">
+                        <label for="modele">Modèle</label>
+                        <input type="text" name="modele" id="modele">
+                    </div>
+
+                    <div class="champs">
+                        <label for="immatriculation">Immatriculation</label>
+                        <input type="text" name="immatriculation" id="immatriculation">
+                    </div>
+
+                    <div class="champs">
+                        <label for="annee">Annee</label>
+                        <input type="date" name="annee" id="annee">
+                    </div>
+
+                    <div class="champs">
+                        <label for="capacite">Capacité</label>
+                        <input type="number" name="capacite" id="capacite">
+                    </div>
+                </section>
+
+                <section>
+
+                    <div class="champs">
+                        <label for="prix">Nombre de place</label>
+                        <input type="number" name="nb_place" id="nb_place" step="0.01">
+                    </div>
+
+                    <div class="champs cylindre">
+                        <label for="prix">Cylindre</label>
+                        <input type="text" name="cylindre" id="cylindre" step="0.01">
+                    </div>
+
+                    <div class="champs">
+                        <label for="kilometrage">Kilometrage</label>
+                        <input type="number" name="kilometrage" id="kilometrage">
+                    </div>
+
+
+
+                    <div class="image">
+                        <div class="boxImg">
+                            <img src="{{url_for('static' , filename='upload/voiture1.jpg')}}" alt="">
+                        </div>
+                        <input type="file" id="file" name="file" hidden accept="image/*">
+                        <button for="file">selection une image</button>
+                    </div>
+
+
+
+                    <div class="button">
+                        <button type="button" id="Annuler">Annuler</button>
+                        <button type="submit" id="Valider">Valider</button>
+                    </div>
+                </section>
+            </form>
+
+
+        </div>
+
+    </div>
+
+    <!-- Scripts -->
+    <script src="{{url_for('static' , filename='js/jquery.js')}}"></script>
+    <script src="{{url_for('static' , filename='js/index.js')}}"></script>
+    <script src="{{url_for('static' , filename='js/vehicule.js')}}"></script>
+</body>
+
+</html>
+   
+    

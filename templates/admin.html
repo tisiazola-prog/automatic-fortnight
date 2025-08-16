@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{title}}</title>
+    <link rel="stylesheet" href="{{url_for('static' , filename='styles/admin.css')}}">
+    <link rel="stylesheet" href="{{url_for('static' , filename='styles/main.css')}}">
+    <script src="{{url_for('static' , filename='js/jquery.js')}}"></script>
+    <script src="{{url_for('static' , filename='js/admin.js')}}"></script>
+
+    <style>
+         :root {
+            --primary-color: #3498db;
+            --secondary-color: #2980b9;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --gray-color: #95a5a6;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            min-height: 100vh;
+        }
+        
+        header {
+            background-color: var(--dark-color);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+        
+        header h1 {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.8rem;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 1rem;
+        }
+        
+        nav a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: background-color 0.3s;
+        }
+        
+        nav a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        nav a.active {
+            background-color: var(--primary-color);
+        }
+        
+        main {
+            padding: 2rem;
+        }
+        
+        footer {
+            background-color: var(--dark-color);
+            color: white;
+            text-align: center;
+            padding: 1rem;
+        }
+        /* Tableau de bord */
+        
+        .dashboard h2 {
+            margin-bottom: 1.5rem;
+            color: var(--dark-color);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .stat-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        
+        .stat-card h3 {
+            color: var(--gray-color);
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-card .count {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 0.25rem;
+        }
+        
+        .stat-card .label {
+            color: var(--gray-color);
+            font-size: 0.9rem;
+        }
+        
+        .recent-activity {
+            background-color: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .recent-activity h3 {
+            margin-bottom: 1rem;
+            color: var(--dark-color);
+        }
+        
+        .recent-activity ul {
+            list-style: none;
+        }
+        
+        .recent-activity li {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .recent-activity li:last-child {
+            border-bottom: none;
+        }
+        /* Styles communs pour les pages */
+        
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .page-header h2 {
+            color: var(--dark-color);
+        }
+        /* Tableaux */
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>Gestion de Véhicules</h1>
+            <nav>
+                <ul>
+                    <li>
+                        <a href="{{url_for('routeVehicule')}}" class="active">
+                            <img src="{{url_for('static' , filename='images/dashboard.png')}}" alt=""> Tableau de bord
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="{{url_for('routeVehicule')}}">
+                            <img src="{{url_for('static' , filename='images/car.png')}}" alt=""> Véhicules
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="#" data-page="entretiens">
+                            <img src="{{url_for('static' , filename='images/Tools.png')}}" alt=""> Entretiens
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="#" data-page="carburant">
+                            <img src="{{url_for('static' , filename='images/gas.png')}}" alt=""> Carburant
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="{{url_for('location')}}">
+                            <img src="{{url_for('static' , filename='images/Key.png')}}" alt=""> Locations
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </header>
+
+        <main>
+            <!-- Contenu dynamique chargé ici -->
+            <div id="content">
+                {% include 'dashboard.html' %}
+
+            </div>
+        </main>
+
+        <footer>
+            <p>Système de gestion de véhicules &copy; 2025</p>
+        </footer>
+    </div>
+
+
+
+</body>
+
+</html>

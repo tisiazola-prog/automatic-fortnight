@@ -1,0 +1,13 @@
+/* #dashboard{
+    display: none;
+} */
+
+#vehicules,
+#locations,
+#carburant {
+    display: none;
+}
+
+body {
+    background-color: black;
+}

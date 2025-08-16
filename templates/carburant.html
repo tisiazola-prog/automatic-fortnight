@@ -1,0 +1,135 @@
+<div class="carburant-page allpages " id="carburant">
+    <div class="page-header">
+        <h2><i class="fas fa-gas-pump"></i> Gestion du Carburant</h2>
+        <button class="btn btn-primary actionBtn" id="add-carburant-btn" data-page="carburant-modal">
+            <i class="fas fa-plus"></i> Ajouter une consommation
+        </button>
+    </div>
+
+
+    <div class="filters">
+
+        <form action="" id="filtreForm">
+
+            <div class="form-group">
+                <label for="carburant-vehicule-filter">Véhicule</label>
+                <select id="carburant-vehicule-filter" class="control">
+                    <option value="">Tous les véhicules</option>
+                    <!-- Rempli dynamiquement -->
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="carburant-date-filter">Période</label>
+                <input type="month" id="carburant-date-filter" class="control">
+            </div>
+
+        </form>
+
+    </div>
+
+
+    <div class="table-container">
+        <table id="carburant-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Véhicule</th>
+                    <th>Marque</th>
+                    <th>Litres</th>
+                    <th>Prix/L</th>
+                    <th>Coût total</th>
+                    <th>Km parcourus</th>
+                    <th>Consommation</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="displayCarburants">
+                <!-- Rempli dynamiquement -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal Ajout/Modification Consommation -->
+<div id="carburant-modal" class="modal">
+
+    <div class="modal-content">
+
+        <div class="modal-header">
+            <h3 id="carburant-modal-title">Ajouter une consommation</h3>
+            <button class="close-btn">&times;</button>
+        </div>
+
+
+
+        <form id="carburant-form" class="modal-body">
+
+
+            <div class="form-row">
+
+                <div class="form-group">
+                    <label for="carburant-vehicule">Véhicule</label>
+                    <select id="carburant-vehicule" class="control" required>
+                        <option value="">Sélectionnez un véhicule</option>
+                        <!-- Rempli dynamiquement -->
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="carburant-vehicule">Marque</label>
+                    <select id="carburant-vehicule" class="control" required>
+                        <option value="">Sélectionnez la marque</option>
+                        <!-- Rempli dynamiquement -->
+                    </select>
+                </div>
+
+
+
+            </div>
+
+            <div class="form-row">
+
+                <div class="form-group">
+                    <label for="carburant-date">Date</label>
+                    <input type="date" id="carburant-date" class="control" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="carburant-litres">Litres</label>
+                    <input type="number" id="carburant-litres" class="control" min="0" step="0.1" required>
+                </div>
+
+
+
+            </div>
+
+            <div class="form-row">
+
+                <div class="form-group">
+                    <label for="carburant-prix">Prix par litre (€)</label>
+                    <input type="number" id="carburant-prix" class="control" min="0" step="0.001" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="carburant-km_parcourus">Km parcourus</label>
+                    <input type="number" id="carburant-km_parcourus" class="control" min="0" required>
+                </div>
+
+            </div>
+
+
+            <div class="form-group">
+                <label for="carburant-station">Station</label>
+                <input type="text" id="carburant-station" class="control">
+            </div>
+
+
+        </form>
+
+        <div class="modal-footer">
+            <button class="btn btn-danger close-modal">Annuler</button>
+            <button class="btn btn-primary" id="save-carburant">Enregistrer</button>
+        </div>
+    </div>
+</div>

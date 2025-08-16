@@ -1,0 +1,50 @@
+<div class="dashboard allpages" id="dashboard">
+    <h2>Tableau de bord</h2>
+    <div class="stats-grid">
+        <div class="stat-card">
+            <h3>Véhicules</h3>
+            <p class="count" id="vehicules-count">0</p>
+            <p class="label">Total</p>
+        </div>
+        <div class="stat-card">
+            <h3>Entretiens</h3>
+            <p class="count" id="entretiens-count">0</p>
+            <p class="label">Ce mois</p>
+        </div>
+
+        <div class="stat-card">
+            <h3>Locations</h3>
+            <p class="count" id="locations-count"> 3</p>
+            <p class="label">Actives</p>
+        </div>
+    </div>
+
+
+</div>
+
+
+<script>
+    $(document).ready(function() {
+
+        totalVehicule();
+
+        function totalVehicule() {
+            $.ajax({
+                url: '/totalVehicule',
+                type: 'GET',
+                success: function(response) {
+                    if (response) {
+                        $("#vehicules-count").html(response);
+                        console.log(response)
+
+
+                    } else {
+
+
+                    }
+                }
+            });
+        }
+
+    });
+</script>
